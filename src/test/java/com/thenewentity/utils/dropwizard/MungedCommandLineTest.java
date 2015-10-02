@@ -45,6 +45,10 @@ public class MungedCommandLineTest {
         testMunging(new String[] { "special", "--properties", "prop1", "prop2", "--", "test.yaml" }, Arrays.asList("override.yaml", "override2.yaml"), new String[] { "special",
                 "--properties", "prop1", "prop2", "--", "test.yaml", "override.yaml", "override2.yaml" }, null);
 
+        // Make sure that a command line with multiple '--' works.
+        testMunging(new String[] { "special", "--", "prop1", "prop2", "--", "test.yaml" }, Arrays.asList("override.yaml", "override2.yaml"), new String[] { "special", "--",
+                "prop1", "prop2", "--", "test.yaml", "override.yaml", "override2.yaml" }, null);
+
         // Make sure that a command line with no arguments succeeding the '--' works.
         testMunging(new String[] { "server", "--" }, null, new String[] { "server", "--" }, null);
 

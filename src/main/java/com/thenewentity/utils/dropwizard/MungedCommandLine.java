@@ -79,10 +79,12 @@ public class MungedCommandLine {
             // Look for a '--', which indicates that everything after it is a list of .yaml files.
             // The first yaml will be sent to MultipleConfigurationProvider by DropWizard. The rest will have to be handed to it
             // by the application implementation.
-            int overridesBegin = argv.indexOf("--");
+            int overridesBegin = argv.lastIndexOf("--");
             if (overridesBegin >= 0) {
                 ++overridesBegin; // skip the "--".
                 ++overridesBegin; // skip the main .yaml that dropwizard reads.
+
+                // Overrides only work if the '--' is far enough away from the end of the list.
                 if (overridesBegin < argv.size()) {
                     result.extraArguments = argv.subList(overridesBegin, argv.size());
                     argv = argv.subList(0, overridesBegin);
