@@ -5,33 +5,55 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A mechanism for extracting multiple positional arguments from a DropWizard command line, which normally only allows a single
+ * positional argument at the end of the command line.
+ */
 public class MungedCommandLine {
 
     private String[] mungedArguments;
-    private Collection<String> yamlOverrides;
+    private Collection<String> extraArguments;
     private String[] originalArguments;
     private String[] defaultArguments;
 
+    /**
+     * Provides an array of strings representing the command line without {@code extraArguments}.
+     */
     public String[] getMungedArguments() {
         return mungedArguments;
     }
 
-    public Collection<String> getYamlOverrides() {
-        return yamlOverrides;
+    /**
+     * Provides a collection of strings representing all command line arguments not in {@code mungedArguments}.
+     */
+    public Collection<String> getExtraArguments() {
+        return extraArguments;
     }
 
+    /**
+     * If you're curious as to what the original command line arguments were, here's where to look.
+     */
     public String[] getOriginalArguments() {
         return originalArguments;
     }
 
+    /**
+     * A list of command line arguments to use if the user didn't specify any.
+     */
     public String[] getDefaultArguments() {
         return defaultArguments;
     }
 
+    /**
+     * Return a {@link Builder} which knows how to generate a MungedCommandLine.
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * A builder which knows how to create a {@link MungedCommandLine}.
+     */
     public static class Builder {
 
         private MungedCommandLine result;
@@ -50,7 +72,7 @@ public class MungedCommandLine {
             // Either use the original arguments or the defaults, if none were specified...
             List<String> argv = new ArrayList<>();
             argv.addAll(Arrays.asList(result.originalArguments));
-            if (argv.isEmpty()) {
+            if (argv == null || (argv.isEmpty() && null != result.defaultArguments)) {
                 argv.addAll(Arrays.asList(result.defaultArguments));
             }
 
@@ -62,7 +84,7 @@ public class MungedCommandLine {
                 ++overridesBegin; // skip the "--".
                 ++overridesBegin; // skip the main .yaml that dropwizard reads.
                 if (overridesBegin < argv.size()) {
-                    result.yamlOverrides = argv.subList(overridesBegin, argv.size());
+                    result.extraArguments = argv.subList(overridesBegin, argv.size());
                     argv = argv.subList(0, overridesBegin);
                 }
             }

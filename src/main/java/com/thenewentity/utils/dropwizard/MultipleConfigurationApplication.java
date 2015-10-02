@@ -17,7 +17,7 @@ abstract public class MultipleConfigurationApplication<T extends Configuration> 
                 .build();
         // @formatter: on
         
-        multipleConfigurationProvider = new MultipleConfigurationProvider(mungedCommandLine.getYamlOverrides());        
+        multipleConfigurationProvider = new MultipleConfigurationProvider(mungedCommandLine.getExtraArguments());        
     }
     
     

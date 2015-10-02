@@ -16,12 +16,19 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * An implementation of ConfigurationSourceProvider which knows how to merge multiple .yaml files so that you can have one
+ * "master" configuration with environment- and user- specific overrides.
+ * 
+ * In your DropWizard application class's initialize(Bootstrap bootstrap) method, pass a MultipleConfigurationProvider to
+ * bootstrap.setConfigurationSourceProvider()
+ */
 public class MultipleConfigurationProvider implements ConfigurationSourceProvider {
 
     private final Collection<String> overrideFiles;
     private final Yaml yaml = new Yaml();
     private String effectiveConfig;
-    
+
     /**
      * Constructor - {@code overrideFiles} is a list of filenames to merge into the yaml specified in the {@code path} provided to
      * {@link #open(String)}
