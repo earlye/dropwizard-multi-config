@@ -3,8 +3,6 @@ package com.thenewentity.utils.dropwizard;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +26,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
     private final Collection<String> overrideFiles;
     private final Yaml yaml = new Yaml();
     private String effectiveConfig;
+    private ConfigurationReader configurationReader;
 
     /**
      * Constructor - {@code overrideFiles} is a list of filenames to merge into the yaml specified in the {@code path} provided to
@@ -35,8 +34,13 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
      * 
      * @param overrideFiles
      */
-    public MultipleConfigurationProvider(Collection<String> overrideFiles) {
+    public MultipleConfigurationProvider(Collection<String> overrideFiles, ConfigurationReader configurationReader) {
         this.overrideFiles = overrideFiles;
+        this.configurationReader = configurationReader;
+    }
+
+    public MultipleConfigurationProvider(Collection<String> overrideFiles) {
+        this(overrideFiles, new DefaultConfigurationReader());
     }
 
     /**
@@ -49,11 +53,13 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
         Map<Object, Object> config = new LinkedHashMap<>();
 
         mergeConfig(config, path);
-        for (String overridePath : overrideFiles) {
-            try {
-                mergeConfig(config, overridePath);
-            } catch (FileNotFoundException e) {
-                // Do nothing - we couldn't find an override file. It's not the end of the world.
+        if (overrideFiles != null) {
+            for (String overridePath : overrideFiles) {
+                try {
+                    mergeConfig(config, overridePath);
+                } catch (FileNotFoundException e) {
+                    // Do nothing - we couldn't find an override file. It's not the end of the world.
+                }
             }
         }
 
@@ -62,6 +68,9 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
         return result;
     }
 
+    /**
+     * Getter; provides a String containing the effective configuration, in .yaml format.
+     */
     public String getEffectiveConfig() {
         return effectiveConfig;
     }
@@ -72,12 +81,12 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
      * 
      * @param config
      * @param path
-     * @throws FileNotFoundException
-     *             if path doesn't exist.
+     * @throws IOException
+     *             if the file couldn't be read for any reason..
      */
-    private void mergeConfig(Map<Object, Object> config, String path) throws FileNotFoundException {
-        final File file = new File(path);
-        Object overrides = yaml.load(new FileInputStream(file));
+    private void mergeConfig(Map<Object, Object> config, String path) throws IOException {
+        String configuration = this.configurationReader.readConfiguration(path);
+        Object overrides = yaml.load(configuration);
         if (overrides == null) {
             return;
         }
@@ -93,6 +102,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
      */
     @SuppressWarnings("unchecked")
     private boolean mergeNode(Object targetNode, Object sourceNode) {
+
         if (sourceNode == null) {
             return false;
         } else if (targetNode == null) {
@@ -140,6 +150,8 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
      */
     private void mergeNodeMaps(Map<Object, Object> targetNode, Map<Object, Object> sourceNode) {
         for (Map.Entry<Object, Object> entry : sourceNode.entrySet()) {
+            // TODO: check if entry.getKey() contains a path, and expand the node if so.
+
             if (!targetNode.containsKey(entry.getKey())) {
                 targetNode.put(entry.getKey(), entry.getValue());
             } else {
