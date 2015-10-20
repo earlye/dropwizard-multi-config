@@ -95,7 +95,9 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
     public InputStream open(String path) throws IOException {
         List<String> paths = new ArrayList<String>();
         paths.add(path);
-        paths.addAll(overrideFiles);
+        if (overrideFiles != null) {
+            paths.addAll(overrideFiles);
+        }
         Map<Object, Object> merged = multipleConfigurationMerger.mergeConfigs(paths);
 
         effectiveConfig = yaml.dump(merged);
