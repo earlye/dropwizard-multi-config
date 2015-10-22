@@ -5,8 +5,8 @@
 
   <groupId>com.thenewentity</groupId>
   <artifactId>dropwizard-multi-config</artifactId>
-  <name>common</name>
-  <description>Common Utility Classes</description>
+  <name>Dropwizard Multi Config</name>
+  <description>Dropwizard Multiple Configuration Support</description>
   <packaging>jar</packaging>
 
   <properties>

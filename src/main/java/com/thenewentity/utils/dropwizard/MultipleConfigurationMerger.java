@@ -21,6 +21,10 @@ public class MultipleConfigurationMerger {
         this.configurationReader = configurationReader;
     }
 
+    public MultipleConfigurationMerger() {
+        this(new DefaultConfigurationReader());
+    }
+
     /**
      * Merge configuration files specified by {@code paths}, and return a Map<Object,Object> representing the merged configs.
      * 
