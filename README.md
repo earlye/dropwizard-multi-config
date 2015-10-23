@@ -75,7 +75,7 @@ java -jar /path/server.jar server -- /path/service.yaml server-logging.yaml serv
 <dependency>
   <groupId>com.thenewentity</groupId>
   <artifactId>dropwizard-multi-config</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>{version}</version>
 </dependency>
 ```
 
