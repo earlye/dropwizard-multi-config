@@ -26,6 +26,4 @@ else
     echo "This is a snapshot branch. Not modifying version info"
 fi
 
-mvn clean install
-
-mvn deploy
+mvn clean deploy
