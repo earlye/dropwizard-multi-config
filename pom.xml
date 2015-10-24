@@ -7,7 +7,30 @@
   <artifactId>dropwizard-multi-config</artifactId>
   <name>Dropwizard Multi Config</name>
   <description>Dropwizard Multiple Configuration Support</description>
+  <url>https://github.com/earlye/dropwizard-multi-config</url>
   <packaging>jar</packaging>
+  <licenses>
+    <license>
+      <name>The MIT License (MIT)</name>
+      <url>https://github.com/earlye/dropwizard-multi-config/blob/master/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/earlye/dropwizard-multi-config</url>
+    <connection>scm:git:git://github.com/earlye/dropwizard-multi-config.git</connection>
+    <developerConnection>scm:git:git@github.com:earlye/dropwizard-multi-config.git</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <email>earlye@gmail.com</email>
+      <name>Early Ehlinger</name>
+      <url>https://github.com/earlye</url>
+      <id>earlye</id>
+    </developer>
+  </developers>
 
   <properties>
     <project.name>${project.groupId}.${project.artifactId}</project.name>
