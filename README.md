@@ -191,4 +191,6 @@ logging:
     org.thenewentity: DEBUG
 ```
 
-Of note here are that our override file was able to change the port on applicationConnector[0], add applicationConnector[1], and add org.thenewentity: DEBUG to logging.loggers.
+Of note here are that our override file was able to change the port
+on applicationConnector[0], add applicationConnector[1], and add 
+org.thenewentity: DEBUG to logging.loggers.

@@ -3,13 +3,23 @@ package com.thenewentity.utils.dropwizard;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -35,6 +45,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
     private String effectiveConfig;
     private MultipleConfigurationMerger multipleConfigurationMerger;
     private final Yaml yaml = new Yaml();
+    private static Set<Character> globChars = buildGlobChars();
 
     /**
      * Constructor
@@ -94,9 +105,11 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
     @Override
     public InputStream open(String path) throws IOException {
         List<String> paths = new ArrayList<String>();
-        paths.add(path);
+        paths.addAll(globPath(path));
         if (overrideFiles != null) {
-            paths.addAll(overrideFiles);
+            for (String entry : overrideFiles) {
+                paths.addAll(globPath(entry));
+            }
         }
         Map<Object, Object> merged = multipleConfigurationMerger.mergeConfigs(paths);
 
@@ -112,4 +125,58 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
         return effectiveConfig;
     }
 
+    /**
+     * Build a set of characters containing all of the glob characters recognized by {@link FileSystem#getPathMatcher}
+     * 
+     * @return
+     */
+    private static Set<Character> buildGlobChars() {
+        Set<Character> result = new HashSet<>();
+        result.addAll(Arrays.asList('[', ']', '{', '}', '*', '?', '\\'));
+        return result;
+    }
+
+    /**
+     * Finds the last occurrence of File.separatorChar prior to the first occurrence of glob pattern characters. If there are no
+     * glob pattern characters, returns -1.
+     * 
+     * @param path
+     */
+    private int lastNonGlobPath(String path) {
+        int last = 0;
+        for (int i = 0; i != path.length(); ++i) {
+            if (globChars.contains(path.charAt(i))) {
+                return last;
+            }
+            if (path.charAt(i) == File.separatorChar) {
+                last = i;
+            }
+        }
+        return -1; // no glob found.
+    }
+
+    /**
+     * Expands {@code path} with glob patterns to return a sorted collection of absolute paths.
+     * 
+     * @param path
+     */
+    private Collection<String> globPath(String path) throws IOException {
+        path = path.replaceFirst("^~" + File.separator, System.getProperty("user.home") + File.separator);
+
+        int lastSeparator = lastNonGlobPath(path);
+        if (lastSeparator >= 0) {
+            Set<String> absPaths = new TreeSet<>();
+            String dir = path.substring(0, lastSeparator);
+            path = path.substring(lastSeparator + 1);
+            try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(Paths.get(dir), path)) {
+                for (Path additionalPath : dirStream) {
+                    String absPath = additionalPath.toAbsolutePath().toString();
+                    absPaths.add(absPath);
+                }
+            }
+            return absPaths;
+        } else {
+            return Arrays.asList(path);
+        }
+    }
 }
