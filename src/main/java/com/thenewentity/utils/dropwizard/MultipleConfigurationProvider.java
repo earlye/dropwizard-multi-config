@@ -149,7 +149,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
                 return last;
             }
             if (path.charAt(i) == File.separatorChar) {
-                last = i;
+                last = i + 1;
             }
         }
         return -1; // no glob found.
@@ -167,7 +167,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
         if (lastSeparator >= 0) {
             Set<String> absPaths = new TreeSet<>();
             String dir = path.substring(0, lastSeparator);
-            path = path.substring(lastSeparator + 1);
+            path = path.substring(lastSeparator);
             try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(Paths.get(dir), path)) {
                 for (Path additionalPath : dirStream) {
                     String absPath = additionalPath.toAbsolutePath().toString();
