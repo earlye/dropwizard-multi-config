@@ -128,7 +128,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
     /**
      * Build a set of characters containing all of the glob characters recognized by {@link FileSystem#getPathMatcher}
      * 
-     * @return
+     * @return the set of glob pattern characters
      */
     private static Set<Character> buildGlobChars() {
         Set<Character> result = new HashSet<>();

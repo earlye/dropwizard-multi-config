@@ -26,10 +26,10 @@ public class MultipleConfigurationMerger {
     }
 
     /**
-     * Merge configuration files specified by {@code paths}, and return a Map<Object,Object> representing the merged configs.
+     * Merge configuration .yaml files specified by {@code paths}, and return a Map<Object,Object> representing the merged configs.
      * 
      * @param paths
-     * @return
+     * @return Map<Object, Object> representing the merged .yaml files.
      */
     public Map<Object, Object> mergeConfigs(Collection<String> paths) {
         Map<Object, Object> config = new LinkedHashMap<>();
@@ -60,7 +60,7 @@ public class MultipleConfigurationMerger {
      * 
      * @param paths
      * @param configurationType
-     * @return
+     * @return Parsed configuration object.
      */
     public <T> T loadConfigs(Collection<String> paths, Class<T> configurationType) {
         Map<Object, Object> configMap = mergeConfigs(paths);
@@ -76,7 +76,7 @@ public class MultipleConfigurationMerger {
      * @param config
      * @param path
      * @throws IOException
-     *             if the file couldn't be read for any reason..
+     *             if the file couldn't be read for any reason.
      */
     private void mergeConfig(Map<Object, Object> config, String path) throws IOException {
         String configuration = this.configurationReader.readConfiguration(path);

@@ -66,7 +66,7 @@ public class MungedCommandLine {
          * Removes configuration override paths from the command line, if specified by putting a '--' before the main
          * configuration.yaml.
          * 
-         * @return
+         * @return the built MungedCommandLine object
          */
         public MungedCommandLine build() {
             // Either use the original arguments or the defaults, if none were specified...
@@ -101,7 +101,7 @@ public class MungedCommandLine {
          * Pass the arguments as passed to your application's main()
          * 
          * @param arguments
-         * @return
+         * @return MungedCommandLine.Builder with new value for originalArguments
          */
         public Builder setOriginalArguments(String[] arguments) {
             result.originalArguments = arguments;
@@ -112,7 +112,7 @@ public class MungedCommandLine {
          * Pass the arguments to use if main() received an empty list.
          * 
          * @param defaultArguments
-         * @return
+         * @return MungedCommandLine.Builder with new value for defaultArguments
          */
         public Builder setDefaultArguments(String[] defaultArguments) {
             result.defaultArguments = defaultArguments;
