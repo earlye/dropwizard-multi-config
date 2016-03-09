@@ -41,7 +41,11 @@ public class MultipleConfigurationProviderTest {
 
     @Test
     public void testNullOverrides() throws Exception {
-        provider = new MultipleConfigurationProvider(null, reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         String effectiveYaml = inputStreamToString(provider.open("main.yaml"));
         assertNotNull(effectiveYaml);
@@ -50,7 +54,11 @@ public class MultipleConfigurationProviderTest {
 
     @Test
     public void testOverrideEmpty() throws Exception {
-        provider = new MultipleConfigurationProvider(null, reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         when(reader.readConfiguration(eq("override1.yaml"))).thenReturn("");
 
@@ -61,7 +69,12 @@ public class MultipleConfigurationProviderTest {
 
     @Test
     public void testOverrideSingleTopLevelValue() throws Exception {
-        provider = new MultipleConfigurationProvider(Arrays.asList("override1.yaml"), reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setOverrideFiles(Arrays.asList("override1.yaml"))
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         when(reader.readConfiguration(eq("override1.yaml"))).thenReturn("template: test2");
 
@@ -72,7 +85,12 @@ public class MultipleConfigurationProviderTest {
 
     @Test
     public void testOverrideSingleNestedValue() throws Exception {
-        provider = new MultipleConfigurationProvider(Arrays.asList("override1.yaml"), reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setOverrideFiles(Arrays.asList("override1.yaml"))
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         when(reader.readConfiguration(eq("override1.yaml"))).thenReturn("server:\n  applicationConnectors:\n  - {port: 5310}\n");
 
@@ -86,8 +104,12 @@ public class MultipleConfigurationProviderTest {
         // This may not be what some people would expect, given DropWizard's support for System variables of the form
         // -Ddw.yaml.path=value, but if you think about how yaml parsing works, this IS correct.
         // We're merging .YAML files, not re-implementing DropWizard's -Ddw.* support.
-
-        provider = new MultipleConfigurationProvider(Arrays.asList("override1.yaml"), reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setOverrideFiles(Arrays.asList("override1.yaml"))
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         when(reader.readConfiguration(eq("override1.yaml"))).thenReturn("server.applicationConnectors[0].port: 5310\n");
 
@@ -98,7 +120,12 @@ public class MultipleConfigurationProviderTest {
 
     @Test
     public void testAddNestedValue() throws Exception {
-        provider = new MultipleConfigurationProvider(Arrays.asList("override1.yaml"), reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setOverrideFiles(Arrays.asList("override1.yaml"))
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         when(reader.readConfiguration(eq("override1.yaml"))).thenReturn("server:\n  applicationConnectors:\n  -\n  - {port: 5310}\n");
 
@@ -109,7 +136,12 @@ public class MultipleConfigurationProviderTest {
 
     @Test
     public void testAddTopLevelValue() throws Exception {
-        provider = new MultipleConfigurationProvider(Arrays.asList("override1.yaml"), reader);
+        // @formatter:off
+        provider = MultipleConfigurationProvider.builder()
+                .setOverrideFiles(Arrays.asList("override1.yaml"))
+                .setMultipleConfigurationMerger(MultipleConfigurationMerger.builder().setConfigurationReader(reader).build())
+                .build();
+        // @formatter:on
 
         when(reader.readConfiguration(eq("override1.yaml"))).thenReturn("template2: test\n");
 

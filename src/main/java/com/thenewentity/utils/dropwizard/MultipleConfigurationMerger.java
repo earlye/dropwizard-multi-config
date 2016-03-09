@@ -8,25 +8,55 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 
 public class MultipleConfigurationMerger {
 
     private static Logger log = LoggerFactory.getLogger(MultipleConfigurationMerger.class);
 
     private ConfigurationReader configurationReader;
-    private final Yaml yaml = new Yaml();
+    private ObjectMapper mapper;
+    private static final Yaml yaml = new Yaml();
 
-    public MultipleConfigurationMerger(ConfigurationReader configurationReader) {
-        this.configurationReader = configurationReader;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public MultipleConfigurationMerger() {
-        this(new DefaultConfigurationReader());
+    public static class Builder {
+
+        MultipleConfigurationMerger result;
+
+        Builder() {
+            result = new MultipleConfigurationMerger();
+        }
+
+        MultipleConfigurationMerger build() {
+            if (result.mapper == null) {
+                result.mapper = new ObjectMapper();
+            }
+            if (result.configurationReader == null) {
+                result.configurationReader = new DefaultConfigurationReader();
+            }
+            return result;
+        }
+
+        Builder setConfigurationReader(ConfigurationReader value) {
+            result.configurationReader = value;
+            return this;
+        }
+
+        Builder setObjectMapper(ObjectMapper value) {
+            result.mapper = value;
+            return this;
+        }
     }
 
     /**
-     * Merge configuration .yaml files specified by {@code paths}, and return a Map<Object,Object> representing the merged configs.
+     * Merge configuration .yaml files specified by {@code paths}, and return a Map<Object,Object> representing the merged
+     * configs.
      * 
      * @param paths
      * @return Map<Object, Object> representing the merged .yaml files.
@@ -64,9 +94,14 @@ public class MultipleConfigurationMerger {
      */
     public <T> T loadConfigs(Collection<String> paths, Class<T> configurationType) {
         Map<Object, Object> configMap = mergeConfigs(paths);
-
+        YAMLFactory yamlFactory = new YAMLFactory();
         String configStr = yaml.dump(configMap);
-        return yaml.loadAs(configStr, configurationType);
+        try {
+            return mapper.readValue(yamlFactory.createParser(configStr), configurationType);
+        } catch (IOException e) {
+            log.error("failed to loadConfigs", e);
+            return null;
+        }
     }
 
     /**
