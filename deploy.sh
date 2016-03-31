@@ -26,4 +26,4 @@ else
     echo "This is a snapshot branch. Not modifying version info"
 fi
 
-mvn clean deploy
+mvn -P release-sign-artifacts clean deploy
