@@ -41,45 +41,47 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class MultipleConfigurationProvider implements ConfigurationSourceProvider {
 
-    private final Collection<String> overrideFiles;
-    private String effectiveConfig;
+    private Collection<String> overrideFiles;
     private MultipleConfigurationMerger multipleConfigurationMerger;
-    private final Yaml yaml = new Yaml();
+    private String effectiveConfig;
+    private static final Yaml yaml = new Yaml();
     private static Set<Character> globChars = buildGlobChars();
 
-    /**
-     * Constructor
-     * 
-     * @param overrideFiles
-     *            - a list of filenames to merge into the yaml specified in the {@code path} provided to {@link #open(String)}
-     */
-    public MultipleConfigurationProvider(Collection<String> overrideFiles) {
-        this(overrideFiles, new DefaultConfigurationReader());
+    MultipleConfigurationProvider() {
+
     }
 
-    /**
-     * Constructor
-     * 
-     * @param overrideFiles
-     *            - list of yamls to merge into the yaml specified in the {@link #open(String)} method.
-     * @param configurationMerger
-     *            - the object which actually merges the yamls.
-     */
-    public MultipleConfigurationProvider(Collection<String> overrideFiles, MultipleConfigurationMerger configurationMerger) {
-        this.overrideFiles = overrideFiles;
-        this.multipleConfigurationMerger = configurationMerger;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    /**
-     * Constructor
-     * 
-     * @param overrideFiles
-     *            - a list of filenames to merge into the yaml specified in the {@code path} provided to {@link #open(String)}.
-     * @param configurationReader
-     *            - is the object which actually reads the yamls.
-     */
-    public MultipleConfigurationProvider(Collection<String> overrideFiles, ConfigurationReader configurationReader) {
-        this(overrideFiles, new MultipleConfigurationMerger(configurationReader));
+    public static class Builder {
+
+        MultipleConfigurationProvider result;
+
+        Builder() {
+            result = new MultipleConfigurationProvider();
+        }
+
+        public MultipleConfigurationProvider build() {
+            if (result.multipleConfigurationMerger == null)
+                throw new InternalError("result.multipleConfigurationMerger is null");
+            return result;
+        }
+
+        /**
+         * @param value
+         *            - a list of filenames to merge into the yaml specified in the {@code path} provided to {@link #open(String)}
+         */
+        Builder setOverrideFiles(Collection<String> value) {
+            result.overrideFiles = value;
+            return this;
+        }
+
+        Builder setMultipleConfigurationMerger(MultipleConfigurationMerger value) {
+            result.multipleConfigurationMerger = value;
+            return this;
+        }
     }
 
     /**
@@ -89,7 +91,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
      * 
      * <p>
      * Read the specified yaml, then merge any {@link #overrideFiles} specified in the
-     * {@link #MultipleConfigurationProvider(Collection) constructor} on top of it. Then, dump that out as yaml into
+     * {@link #overrideFiles} on top of it. Then, dump that out as yaml into
      * {@link #effectiveConfig}, and return an InputStream to DropWizard.
      * </p>
      * 
