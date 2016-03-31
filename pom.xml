@@ -38,6 +38,7 @@
 
     <version.dropwizard>0.8.2</version.dropwizard>
     <version.httpcomponents>4.3</version.httpcomponents>
+    <version.jackson-data-format-yaml>2.7.3</version.jackson-data-format-yaml>
     <version.junit>4.11</version.junit>
     <version.mockito>1.9.5</version.mockito>
   </properties>
@@ -74,6 +75,13 @@
       <version>${version.mockito}</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${version.jackson-data-format-yaml}</version>
+    </dependency>
+    
   </dependencies>
 
   <distributionManagement>
@@ -155,29 +163,49 @@
             </goals>
             <configuration>
               <failOnError>false</failOnError>
+              <additionalparam>-Xdoclint:none</additionalparam>
             </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <configuration>
-          <useAgent>true</useAgent>
-        </configuration>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      
+
     </plugins>
+
+
   </build>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <configuration>
+              <useAgent>true</useAgent>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

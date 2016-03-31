@@ -33,7 +33,7 @@ public class MultipleConfigurationMerger {
             result = new MultipleConfigurationMerger();
         }
 
-        MultipleConfigurationMerger build() {
+        public MultipleConfigurationMerger build() {
             if (result.mapper == null) {
                 result.mapper = new ObjectMapper();
             }
@@ -43,12 +43,12 @@ public class MultipleConfigurationMerger {
             return result;
         }
 
-        Builder setConfigurationReader(ConfigurationReader value) {
+        public Builder setConfigurationReader(ConfigurationReader value) {
             result.configurationReader = value;
             return this;
         }
 
-        Builder setObjectMapper(ObjectMapper value) {
+        public Builder setObjectMapper(ObjectMapper value) {
             result.mapper = value;
             return this;
         }

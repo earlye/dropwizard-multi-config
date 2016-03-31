@@ -91,7 +91,7 @@ public class MultipleConfigurationProvider implements ConfigurationSourceProvide
      * 
      * <p>
      * Read the specified yaml, then merge any {@link #overrideFiles} specified in the
-     * {@link #MultipleConfigurationProvider(Collection) constructor} on top of it. Then, dump that out as yaml into
+     * {@link #overrideFiles} on top of it. Then, dump that out as yaml into
      * {@link #effectiveConfig}, and return an InputStream to DropWizard.
      * </p>
      * 
