@@ -157,11 +157,11 @@ public class MultipleConfigurationMerger {
      * @param sourceNode
      */
     private void mergeNodeLists(List<Object> targetNode, List<Object> sourceNode) {
-        for (int i = 0; i != targetNode.size(); ++i) {
-            Object targetEntry = targetNode.get(i);
-            Object sourceEntry = sourceNode.get(i);
+        for (int i = 0; i < targetNode.size() && i < sourceNode.size(); ++i) {
+            final Object targetEntry = targetNode.get(i);
+            final Object sourceEntry = sourceNode.get(i);
             if (mergeNode(targetEntry, sourceEntry)) {
-                targetNode.set(i, sourceEntry);
+            targetNode.set(i, sourceEntry);
             }
         }
         for (int i = targetNode.size(); i < sourceNode.size(); ++i) {
